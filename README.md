@@ -1,2 +1,418 @@
-# Simulador-MAS
-Simulador usado para LRPD de Fisica II de la UPSJB como trabajo final de curso.
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador M.A.S</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+
+        .sim-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgb(250, 249, 249);
+            margin-top: 30px;
+        }
+
+        canvas {
+            background: #ffffff;
+            border: 1px solid #4b1b1b;
+            width: 100%;
+            /* Responsive */
+            border-radius: 4px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .val-display {
+            font-weight: bold;
+            color: #ff9d00;
+            float: right;
+        }
+
+        h1.title {
+            color: #030303;
+            margin-bottom: 20px;
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-top" style="background: #ff9d00; height: 10px;"></div>
+        <div class="container">
+
+            <section class="slider">
+                <img src="img/Main_Banner.gif" alt="Slider" style="width: 100%; height: 400px;">
+            </section>
+        </div>
+    </header>
+    <section class="description-section" style="padding: 60px 0;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="main-title">TRABAJO LRPD</h1>
+                    <div class="description-text">
+                        <p>
+                            Este es un trabajo de simulador hecho para aquellas personas que tengan algún problema
+                            relacionado al M.A.S en Física II.
+                            El movimiento armónico simple es un tipo de movimiento periódico en el cual un cuerpo oscila
+                            alrededor de una posición de equilibrio.
+                            Se caracteriza porque la fuerza restauradora que actúa sobre el cuerpo es directamente
+                            proporcional al desplazamiento y siempre se dirige hacia el punto de equilibrio.
+                        </p>
+                        <p>
+                            Este simulador no busca ningún tipo de lucro y fue hecho solo para un trabajo informativo de
+                            la universidad privada san juan bautista.
+                            En caso de alguna queja o incomodidad, mandar un mensaje de correo a electropw311@gmail.com.
+                        </p>
+                        <p>
+                            Queremos expresar nuestro profundo agradecimiento al docente Arom Lissandro López Márquez,
+                            quien con su paciencia, dedicación y orientación académica ha contribuido de manera
+                            significativa a nuestro aprendizaje.
+                            Su guía constante y la claridad con la que comparte sus conocimientos han sido fundamentales
+                            para la realización de este trabajo y para nuestro crecimiento como estudiantes de
+                            Ingeniería de Sistemas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="image-container">
+                        <img src="img/M.A.S_GIF.gif" alt="Slider" style="width: 80%; height: 300px;">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="simulation-section" style="padding: 40px 0; background: #fff;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="sim-container"
+                        style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h4 style="border-bottom: 2px solid #f39c12; padding-bottom: 10px;">Configuración</h4>
+
+                                <div class="form-group">
+                                    <label style="color: #34495e;">Orientación del Sistema:</label>
+                                    <select id="eje" class="form-control" onchange="actualizarDatos()">
+                                        <option value="horizontal">Horizontal (Eje X)</option>
+                                        <option value="vertical">Vertical (Eje Y)</option>
+                                    </select>
+                                </div>
+
+                                <hr>
+
+                                <div class="form-group">
+                                    <label>Masa (m) en kg:</label>
+                                    <input type="number" id="masa" value="2" min="0.1" step="0.1" class="form-control"
+                                        oninput="actualizarDatos()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Constante (k) en N/m:</label>
+                                    <input type="number" id="k" value="5" min="0.1" step="0.1" class="form-control"
+                                        oninput="actualizarDatos()">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Amplitud (A) en m:</label>
+                                    <input type="number" id="amplitud" value="10" step="1" class="form-control"
+                                        oninput="actualizarDatos()">
+                                </div>
+
+                                <div class="btn-group btn-group-justified" role="group" style="margin-top: 15px;">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-danger" onclick="pausarSimulacion()"><i
+                                                class="fa fa-pause"></i> Pausar</button>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-success" onclick="reanudarSimulacion()"><i
+                                                class="fa fa-play"></i> Seguir</button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-default btn-block btn-sm" onclick="avanzarPaso()"
+                                    style="margin-top: 5px;"><i class="fa fa-step-forward"></i> Avanzar 1 paso</button>
+
+                                <hr>
+
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="showVectors" checked onchange="actualizarDatos()">
+                                        Ver Vectores</label>
+                                </div>
+
+                                <div
+                                    style="background: #f8f9fa; padding: 12px; margin-top: 20px; border-left: 4px solid #f39c12; border-radius: 4px;">
+                                    <strong><i class="fa fa-tachometer"></i> Datos en vivo:</strong><br>
+                                    <span style="color: #27ae60; font-weight: bold;">Velocidad:</span> <span
+                                        id="dato-v">0.00</span> m/s<br>
+                                    <span style="color: #c0392b; font-weight: bold;">Aceleración:</span> <span
+                                        id="dato-a">0.00</span> m/s²<br>
+                                    <span style="color: #555;">Posición:</span> <span id="dato-p">0.00</span> m
+                                </div>
+
+                                <button onclick="reiniciar()" class="btn btn-warning btn-block"
+                                    style="margin-top: 20px;">
+                                    <i class="fa fa-refresh"></i> Reiniciar
+                                </button>
+                            </div>
+
+                            <div class="col-md-9">
+                                <h4 class="text-center" style="color: #555;">Simulación <span
+                                        id="titulo-eje">Horizontal</span></h4>
+                                <canvas id="lienzo" width="800" height="450"
+                                    style="width: 100%; border: 1px solid #e0e0e0; background: #fff; border-radius: 4px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="team" style="padding: 50px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center" style="margin-bottom: 40px;">
+                    <h2 style="font-weight: bold; color: #333;">Miembros del desarrollo</h2>
+                    <div style="width: 120px; height: 3px; background: #f39c12; margin: 20px auto;"></div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-4 col-sm-4">
+                    <div class="teams text-center">
+                        <img src="img/DarkUser.png" alt="Peña"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #f39c12; display: block; margin: 0 auto;">
+                        <h3 style="margin-top: 15px; font-weight: bold;">Peña, Walter</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-4">
+                    <div class="teams text-center">
+                        <img src="img/DarkUser.png" alt="Munayco"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #f39c12; display: block; margin: 0 auto;">
+                        <h3 style="margin-top: 15px; font-weight: bold;">Munayco, Dario</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-4">
+                    <div class="teams text-center">
+                        <img src="img/DarkUser.png" alt="Nolazco"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #f39c12; display: block; margin: 0 auto;">
+                        <h3 style="margin-top: 15px; font-weight: bold;">Nolazco, Maricielo</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 30px;">
+                <div class="col-md-4 col-md-offset-2 col-sm-6">
+                    <div class="teams text-center">
+                        <img src="img/DarkUser.png" alt="Ormeño"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #f39c12; display: block; margin: 0 auto;">
+                        <h3 style="margin-top: 15px; font-weight: bold;">Ormeño, Alan</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="teams text-center">
+                        <img src="img/DarkUser.png" alt="Loayza"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 3px solid #f39c12; display: block; margin: 0 auto;">
+                        <h3 style="margin-top: 15px; font-weight: bold;">Loayza, Kimberly</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer_bottom" style="background: #222; padding: 20px 0; color: white;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>© 2025 Electropw</p>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <p>Facultad de Ingeniería de Sistemas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('lienzo');
+        const ctx = canvas.getContext('2d');
+
+        let t = 0;
+        let animacion;
+        let pausado = false;
+
+        let m, k, A, omega, eje;
+
+        function actualizarDatos() {
+            m = parseFloat(document.getElementById('masa').value) || 1;
+            k = parseFloat(document.getElementById('k').value) || 1;
+            A = parseFloat(document.getElementById('amplitud').value) || 10;
+            eje = document.getElementById('eje').value;
+
+            omega = Math.sqrt(k / m);
+
+            document.getElementById('titulo-eje').innerText = (eje === 'horizontal') ? "Horizontal (X)" : "Vertical (Y)";
+        }
+
+        function pausarSimulacion() { pausado = true; }
+        function reanudarSimulacion() { pausado = false; }
+        function avanzarPaso() {
+            if (pausado) { t += 0.05; } else { pausarSimulacion(); }
+        }
+
+        function dibujarFlecha(x, y, longitud, color, etiqueta, esVertical) {
+            if (Math.abs(longitud) < 2) return;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3;
+
+            ctx.translate(x, y);
+            if (esVertical) {
+                ctx.rotate(Math.PI / 2);
+            }
+
+            ctx.moveTo(0, 0);
+            ctx.lineTo(longitud, 0);
+            ctx.stroke();
+
+            const headLen = 10;
+            const direction = longitud >= 0 ? 1 : -1;
+            ctx.beginPath();
+            ctx.moveTo(longitud, 0);
+            ctx.lineTo(longitud - headLen * direction, -headLen / 2);
+            ctx.lineTo(longitud - headLen * direction, headLen / 2);
+            ctx.fill();
+
+            ctx.font = "bold 12px Arial";
+            ctx.save();
+            ctx.translate(longitud / 2, -15);
+            if (esVertical) ctx.rotate(-Math.PI / 2);
+            ctx.fillText(etiqueta, 0, 0);
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function dibujarResorte(x1, y1, x2, y2, espiras, ancho) {
+            ctx.beginPath();
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const longitud = Math.sqrt(dx * dx + dy * dy);
+            const paso = longitud / espiras;
+
+            ctx.save();
+            ctx.translate(x1, y1);
+            ctx.rotate(Math.atan2(dy, dx));
+            ctx.moveTo(0, 0);
+            for (let i = 1; i <= espiras; i++) {
+                let x = i * paso;
+                let y = (i % 2 === 0) ? ancho : -ancho;
+                if (i === espiras) y = 0;
+                ctx.lineTo(x - (paso / 2), y);
+                ctx.lineTo(x, 0);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function dibujar() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const pos_fisica = A * Math.cos(omega * t);
+            const v_fisica = -A * omega * Math.sin(omega * t);
+            const a_fisica = -A * omega * omega * Math.cos(omega * t);
+
+            document.getElementById('dato-v').innerText = v_fisica.toFixed(2);
+            document.getElementById('dato-a').innerText = a_fisica.toFixed(2);
+            document.getElementById('dato-p').innerText = pos_fisica.toFixed(2);
+
+            const escalaVisual = 250 / (A === 0 ? 1 : A);
+            const despl_visual = pos_fisica * escalaVisual;
+
+            const centroX = canvas.width / 2;
+            const centroY = canvas.height / 2;
+
+            if (eje === 'horizontal') {
+
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillRect(20, centroY - 50, 20, 100);
+
+                ctx.beginPath(); ctx.moveTo(20, centroY + 42); ctx.lineTo(canvas.width, centroY + 42);
+                ctx.strokeStyle = '#ddd'; ctx.stroke();
+
+                dibujarResorte(40, centroY, centroX + despl_visual - 40, centroY, 14, 10);
+
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(centroX + despl_visual - 40, centroY - 40, 80, 80);
+
+                ctx.fillStyle = 'white'; ctx.fillText(m + "kg", centroX + despl_visual - 15, centroY + 5);
+
+                if (document.getElementById('showVectors').checked) {
+                    const v_v = (v_fisica / (A * omega)) * 100;
+                    const a_v = (a_fisica / (A * omega * omega)) * 100;
+                    dibujarFlecha(centroX + despl_visual, centroY - 50, v_v, '#2ecc71', 'v', false);
+                    dibujarFlecha(centroX + despl_visual, centroY + 50, a_v, '#e74c3c', 'a', false);
+                }
+
+            } else {
+
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillRect(centroX - 50, 20, 100, 20);
+
+                dibujarResorte(centroX, 40, centroX, centroY + despl_visual - 40, 14, 10);
+
+                ctx.fillStyle = '#e67e22';
+                ctx.fillRect(centroX - 40, centroY + despl_visual - 40, 80, 80);
+
+                ctx.fillStyle = 'white'; ctx.fillText(m + "kg", centroX - 15, centroY + despl_visual + 5);
+
+                if (document.getElementById('showVectors').checked) {
+                    const v_v = (v_fisica / (A * omega)) * 100;
+                    const a_v = (a_fisica / (A * omega * omega)) * 100;
+                    dibujarFlecha(centroX + 50, centroY + despl_visual, v_v, '#2ecc71', 'v', true);
+                    dibujarFlecha(centroX - 50, centroY + despl_visual, a_v, '#e74c3c', 'a', true);
+                }
+            }
+
+            if (!pausado) t += 0.05;
+            animacion = requestAnimationFrame(dibujar);
+        }
+
+        function reiniciar() {
+            t = 0;
+            pausado = false;
+            actualizarDatos();
+        }
+
+        actualizarDatos();
+        dibujar();
+    </script>
+</body>
+</html>
